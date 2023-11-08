@@ -80,7 +80,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     #Our fields for User Model are email and name
     email = models.EmailField(blank=True, default='', unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
-
+    
+    #Adding the fields that django depends on
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

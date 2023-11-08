@@ -1,22 +1,17 @@
-POST http://127.0.0.1:8000/login
+POST http://127.0.0.1:8000/stbookinventory/login
 Content-Type: application/json
-
-#{"username": "malamu01", "password":"1234"}
 {"email": "marvinalamu_1@live.com", "password":"1234"}
 
 ###
 
-POST http://127.0.0.1:8000/signup
+POST http://127.0.0.1:8000/stbookinventory/signup
 Content-Type: application/json
-
-#{"username": "marv", "password":"1234", "email":"marvinalamu_1@live.com"}
-#{"name": "marvinalamu_1", "email":"marvinalamu_1@live.com"}
-{"username": "marvinalamu_1@live.com", "password":"1234"}
+{"email": "marvinalamu_1@live.com", "password":"1234"}
 
 ###
 
-GET http://127.0.0.1:8000/test_token
+GET http://127.0.0.1:8000/stbookinventory/test_token
 Content-Type: application/json
-Authorization: Token XXXX
+Authorization: Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 {}

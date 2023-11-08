@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 
 
+
 #Similar to the previous line, this imports the Book model from a module located in the same directory. It's common to organize your Django app with models, views, and serializers in the same package or directory.
 from .models import Book
 from .models import User
@@ -21,8 +22,9 @@ from rest_framework.decorators import api_view
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
-#from django.contrib.auth import get_user_model
+#from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 from django.shortcuts import get_object_or_404
@@ -31,8 +33,11 @@ from django.shortcuts import get_object_or_404
 #CRUD Operations GET POST PUT/PATCH DELETE
 
 #This is a decorator provided by Django REST framework (DRF). It specifies that the create_book_view function should only respond to HTTP POST requests. This means that the view will handle requests where clients want to create new book records. It enforces the RESTful convention of using specific HTTP methods for specific actions.
-@api_view(["POST"])
+
 #This is the view function that handles the incoming HTTP POST request for adding a new book. It takes a request object as a parameter, which contains information about the client's request, including the data sent in the request.
+@api_view(["POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def add_book_view(request):
     #This conditional checks if the HTTP method used for the request is indeed a POST request. This is a safety measure to ensure that the view only processes POST requests.
     if request.method == "POST":
@@ -50,8 +55,11 @@ def add_book_view(request):
             return Response(serializer.errors, status=400)
         
 
-@api_view(["GET"])
+
 #This is the view function that handles the incoming HTTP GET request. It takes two parameters: request and book_id. The request parameter contains information about the client's request, and book_id is a parameter extracted from the URL, typically used to identify the specific book to retrieve.
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def get_book_view(request, book_id):
     try:
     #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists. We removed .first() so that the try except function is able to read the error, otherwise it returns the first occurence of the book which in this case are empty fields
@@ -70,8 +78,11 @@ def get_book_view(request, book_id):
         }, status=status.HTTP_404_NOT_FOUND)    
     
 
-@api_view(["GET"])
+
 #This is the view function that handles the incoming HTTP GET request. It takes two parameters: request and book_id. The request parameter contains information about the client's request, and book_id is a parameter extracted from the URL, typically used to identify the specific book to retrieve.
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def get_all_books_view(request):
     #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists
     books = Book.objects.all()
@@ -84,6 +95,8 @@ def get_all_books_view(request):
     
 
 @api_view(["PATCH"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def update_book_view(request, book_id):    
     book = Book.objects.filter(id=book_id).first()
     if book:
@@ -100,6 +113,8 @@ def update_book_view(request, book_id):
        
 
 @api_view(["DELETE"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def delete_book_view(request, book_id):
     book = Book.objects.filter(id=book_id).first()
     if book:
@@ -116,7 +131,7 @@ def delete_book_view(request, book_id):
 @api_view(['POST'])
 def login(request):
     #This line retrieves a user from the database based on the provided username in the request data (meaning your json POST request for postman should have a username key). get_object_or_404 is a helper function provided by Django that retrieves an object from the database and raises a 404 Not Found exception if the object doesn't exist. In this case, it's used to retrieve the user based on the username provided in the request data.
-    user = get_object_or_404(User, username=request.data['username'])
+    user = get_object_or_404(User, email=request.data['email'])
     #This condition checks whether the provided password in the request data matches the user's password stored in the database if no error shows up. check_password is a method provided by Django's user model to compare a plaintext password with the hashed password stored in the database. 
     if not user.check_password(request.data['password']):
         #If the passwords don't match, it returns a 404 Not Found response, indicating that the user was not found
@@ -127,7 +142,15 @@ def login(request):
     serializer = UserSerializer(instance=user)
     #This line sends a response with the token and user data in JSON format. The token.key attribute provides the generated authentication token key.serializer.data contains the serialized user data.
     return Response({"token": token.key, "user": serializer.data})
-    
+
+
+@api_view(['POST'])
+def logout(request):
+    user = request.user
+    token = Token.objects.filter(user=user)
+    token.delete()
+    return Response({"message": "User logged out"})
+
 
 #from django.views.decorators.csrf import csrf_exempt
 @api_view(['POST'])
@@ -140,7 +163,7 @@ def signup(request):
         #user_data = serializer.validated_data
         serializer.save()
         #This line retrieves the newly created user from the database based on the username provided in the request data. However, this step seems unnecessary because you've already created the user with serializer.save()
-        user = User.objects.get(username=request.data['username'])
+        user = User.objects.get(email=request.data['email'])
         #This line sets the user's password. It's essential to hash the password using Django's built-in password hashing mechanisms.
         user.set_password(request.data['password'])
         #This line saves the user object with the updated password

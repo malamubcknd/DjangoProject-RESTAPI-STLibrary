@@ -18,6 +18,7 @@ urlpatterns = [
     path('update/api/<int:book_id>/',api_views.update_book_view, name='update_book_api'), #This is an API UPDATE request
     path('delete/api/<int:book_id>/',api_views.delete_book_view, name='delete_book_api'), #This is an API DELETE request
     re_path('login',api_views.login),
+    re_path('logout',api_views.logout),
     re_path('signup',api_views.signup),
     re_path('test_token',api_views.test_token),
 ]
