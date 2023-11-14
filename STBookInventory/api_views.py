@@ -171,7 +171,7 @@ def signup(request):
         #This code generates an authentication token for the newly created user using DRF's Token model.
         token = Token.objects.create(user=user)
         #If the data is valid, the code returns a JSON response with the user's token and serialized user data
-        return Response({"token":token.key, "user": serializer.data})
+        return Response({"token":token.key})
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
 
