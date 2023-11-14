@@ -60,11 +60,12 @@ class CustomUserManager(UserManager):
         #returns the user object
         return user
     
+    #The create_user and create_super methods below are not directly related to command-line commands like python manage.py createuser or interactions with the Django admin website. The admin site often uses the standard User.objects.create() method for user creation
     #This is a wrapper method for creating a regular user. It calls the _create_user method internally and sets default values for the is_staff and is_superuser fields to False
     def create_user(self, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields) #calls the _create_user method
     
     #Similar to the create_user method, this is a wrapper method for creating a superuser (admin user). It also calls the _create_user method internally but sets default values for is_staff and is_superuser to True
     def create_superuser(self, email=None, password=None, **extra_fields):
@@ -81,7 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(blank=True, default='', unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
     
-    #Adding the fields that django depends on
+    #Adding the fields that django depends on. This determines whether a user registered via REST can log into the admin site
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
