@@ -78,11 +78,11 @@ class CustomUserManager(UserManager):
 #We are using functions from our Custom User Manager Class
 #This custom user model extends Django's built-in AbstractBaseUser and PermissionsMixin classes, allowing you to create a user model with customized fields and permissions    
 class User(AbstractBaseUser, PermissionsMixin):
-    #Our fields for User Model are email and name
+    #Our fields for User Model are email, name, is_active, is_superuser, is_staff, date_joined, last_login
     email = models.EmailField(blank=True, default='', unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
     
-    #Adding the fields that django depends on. This determines whether a user registered via REST can log into the admin site
+    #Adding the fields that django depends on(must add since we defined our own custom user model). This determines whether a user registered via REST can log into the admin site
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
