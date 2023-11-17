@@ -22,6 +22,13 @@ admin.site.register(BookCheckout)
 class UserAdmin(admin.ModelAdmin):
     list_display = ("email",)
 
+    fieldsets = (
+        ('User Details', {'fields': ('name', 'email')}),
+        ('Permissions', {'fields': ('groups','user_permissions','is_staff', 'is_active', 'is_superuser')}),
+        ('User Timeline', {'fields': ('date_joined', 'last_login')}),
+    )
+
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         is_superuser = request.user.is_superuser
