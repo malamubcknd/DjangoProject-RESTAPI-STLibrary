@@ -138,3 +138,5 @@ REST_FRAMEWORK = {
         'drf-spectacular.openapi.AutoSchema',
     )
 }
+
+SPECTACULAR_SETTINGS = {'TITLE': 'Django DRF STLibrary'}
