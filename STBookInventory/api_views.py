@@ -35,7 +35,7 @@ from django.shortcuts import get_object_or_404
 #To make the schema help details appear at the bottom of Swagger UI website
 from drf_spectacular.utils import extend_schema
 @extend_schema(responses=BookSerializer)
-@extend_schema(responses=UserSerializer)
+@extend_schema(request=UserSerializer)
 
 #CRUD Operations GET POST PUT/PATCH DELETE
 
