@@ -48,18 +48,36 @@ from drf_spectacular.utils import extend_schema
 def add_book_view(request):
     #This conditional checks if the HTTP method used for the request is indeed a POST request. This is a safety measure to ensure that the view only processes POST requests.
     if request.method == "POST":
-        #This line extracts the data sent in the request from the request object. The data is typically in JSON format and contains information about the book to be created.
-        data = request.data
-        #Here, a BookSerializer instance is created, and it's initialized with the data extracted from the request. The purpose of the serializer is to validate the incoming data and convert it into a format suitable for creating a new book record in the database
-        serializer = BookSerializer(data=data)
-        #This conditional checks if the data provided in the request is valid according to the rules specified in the BookSerializer class. The is_valid() method is a validation step provided by DRF to ensure the data complies with the defined model and serializer rules
-        if serializer.is_valid():
-            serializer.save()
-            #If the book creation is successful, the view returns a Response object. This response includes the serialized data of the newly created book, which is typically returned to the client as a JSON response. A status code of 201 (Created) is also included in the response to indicate that the request was successful.
-            return Response(serializer.data, status=201)
+        #Check if the data is a single JSON object
+        if isinstance(request.data, dict):
+            data = [request.data]  # Convert the single object to a list
+        elif isinstance(request.data, list):
+            data = request.data
         else:
-            #If the data provided in the request is not valid according to the serializer's rules, the view returns a Response object with the validation errors (found in serializer.errors) and a status code of 400 (Bad Request)
-            return Response(serializer.errors, status=400)
+            return Response({"error": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
+
+        for book_data in data:
+        #This line extracts the data sent in the request from the request object. The data is typically in JSON format and contains information about the book to be created.
+        #data = request.data
+        #Here, a BookSerializer instance is created, and it's initialized with the data extracted from the request. The purpose of the serializer is to validate the incoming data and convert it into a format suitable for creating a new book record in the database
+            serializer = BookSerializer(data=book_data)
+            #This conditional checks if the data provided in the request is valid according to the rules specified in the BookSerializer class. The is_valid() method is a validation step provided by DRF to ensure the data complies with the defined model and serializer rules
+            if serializer.is_valid():
+                serializer.save()
+                #If the book creation is successful, the view returns a Response object. This response includes the serialized data of the newly created book, which is typically returned to the client as a JSON response. A status code of 201 (Created) is also included in the response to indicate that the request was successful.
+                #return Response(serializer.data, status=201)
+                responses.append(serializer.data)
+            else:
+                #If the data provided in the request is not valid according to the serializer's rules, the view returns a Response object with the validation errors (found in serializer.errors) and a status code of 400 (Bad Request)
+                #return Response(serializer.errors, status=400)
+                responses.append(serializer.errors)
+        
+        # Return the combined responses for all books
+        return Response(responses, status=status.HTTP_201_CREATED)
+    else:
+        return Response({"error": "Invalid HTTP method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         
 
 
