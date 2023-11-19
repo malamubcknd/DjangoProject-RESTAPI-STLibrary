@@ -1,3 +1,6 @@
 __pycache__/
 env/
 venv/
+schema.yml
+db.sqlite
+.env

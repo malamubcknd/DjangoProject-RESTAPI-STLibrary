@@ -5,7 +5,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 
-
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
+from .models import User
+from .serializers import UserSerializer
 
 #Similar to the previous line, this imports the Book model from a module located in the same directory. It's common to organize your Django app with models, views, and serializers in the same package or directory.
 from .models import Book
@@ -83,7 +86,21 @@ def get_book_view(request, book_id):
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+#@parser_classes([JSONParser])
 def get_all_books_view(request):
+    # Check if the "token" key is present in the JSON payload
+    #if "token" not in request.data:
+        #return Response({"detail": "Token not provided in the JSON payload."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Extract the token from the JSON payload
+    #token = request.data.get("token")
+
+    # Validate the token
+    #try:
+        #user = Token.objects.get(key=token).user
+    #except Token.DoesNotExist:
+        #return Response({"detail": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED)
+    
     #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists
     books = Book.objects.all()
     #This conditional checks if a book with the specified book_id was found in the database. If a book exists, the condition evaluates to True.
@@ -92,6 +109,9 @@ def get_all_books_view(request):
         serializer = BookSerializer(books, many=True)
         #If a book was found and successfully serialized, this line returns a DRF Response object. The response contains the serialized data of the book, which is typically returned to the client as a JSON response. This allows the client to receive detailed information about the book. The HTTP status code of the response will be 200 (OK) by default, indicating a successful GET request.
         return Response(serializer.data)
+    
+    # If no books were found, return a 404 response
+    return Response({"detail": "No books found."}, status=status.HTTP_404_NOT_FOUND)
     
 
 @api_view(["PATCH"])
@@ -129,6 +149,7 @@ def delete_book_view(request, book_id):
 
 #This decorator specifies that the view function should only respond to HTTP POST requests
 @api_view(['POST'])
+@parser_classes([JSONParser])
 def login(request):
     #This line retrieves a user from the database based on the provided username in the request data (meaning your json POST request for postman should have a username key). get_object_or_404 is a helper function provided by Django that retrieves an object from the database and raises a 404 Not Found exception if the object doesn't exist. In this case, it's used to retrieve the user based on the username provided in the request data.
     user = get_object_or_404(User, email=request.data['email'])
