@@ -14,6 +14,8 @@ from .serializers import UserSerializer
 from .models import Book
 from .models import User
 
+#Implementing pagination for REST API JSON view
+from rest_framework.pagination import PageNumberPagination
 
 #This line imports the Response class from the response module of the Django REST framework. The Response class is used to create HTTP responses for API views. You can return Response objects from your API views to send data back to clients in a structured format, typically as JSON.
 from rest_framework.response import Response
@@ -36,6 +38,7 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 @extend_schema(responses=BookSerializer)   #BookSerializer is a reponse becuase we get the books from the database and convert it using the serializer and then present it to the user in json format as a reponse
 @extend_schema(request=UserSerializer)   #UserSerializer is a request because we request a user input and that is then serialized
+
 
 #CRUD Operations GET POST PUT/PATCH DELETE
 
@@ -86,14 +89,10 @@ def get_book_view(request, book_id):
             serializer = BookSerializer(book)
             return Response(serializer.data)
         else:
-            return Response({
-            'error': 'Book does not exist'
-        }, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Book does not exist'}, status=status.HTTP_404_NOT_FOUND)
     #This conditional checks if a book with the specified book_id was found in the database. If a book exists, the condition evaluates to True.
     except:
-        return Response({
-            'error': 'Book does not exist'
-        }, status=status.HTTP_404_NOT_FOUND)    
+        return Response({'error': 'Book does not exist'}, status=status.HTTP_404_NOT_FOUND)    
     
 
 
@@ -117,47 +116,94 @@ def get_all_books_view(request):
         #return Response({"detail": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED)
     
     #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists
+    paginator = PageNumberPagination()
+    paginator.page_size = 10
     books = Book.objects.all()
     #This conditional checks if a book with the specified book_id was found in the database. If a book exists, the condition evaluates to True.
     if books:
+        result_page = paginator.paginate_queryset(books,request)
         ##Here, a BookSerializer instance is created, and it's initialized with the book object that was retrieved from the database. The purpose of the serializer is to convert the book object into a serialized format that can be easily rendered as JSON or another content type for the response.
-        serializer = BookSerializer(books, many=True)
+        serializer = BookSerializer(result_page, many=True)
         #If a book was found and successfully serialized, this line returns a DRF Response object. The response contains the serialized data of the book, which is typically returned to the client as a JSON response. This allows the client to receive detailed information about the book. The HTTP status code of the response will be 200 (OK) by default, indicating a successful GET request.
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
     
     # If no books were found, return a 404 response
     return Response({"detail": "No books found."}, status=status.HTTP_404_NOT_FOUND)
     
 
+# @api_view(["PATCH"])
+# @authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+# def update_book_view(request, book_id): 
+#     book = Book.objects.filter(id=book_id).first()
+#     if User.account_type == 'Admin':
+#         if book:
+#             data = request.data
+#             #When working with serializers in Django REST framework, make sure to use the partial=True option when updating instances. This allows you to perform partial updates, meaning you can update only the fields that you provide in the request without requiring all fields to be present. This prevents an error when i try updating the book and i do not change the book's unique field, it gives me an error even though i am not changing the unique field of the particular book
+#             serializer = BookSerializer(book, data=data, partial=True)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response(serializer.data)
+#             else:
+#                 return Response(serializer.errors, status=400)
+#         else:
+#             return Response("Book not found", status=404)
+#     else:
+#         return Response("Sorry you are not an Admin", status=404)
+
 @api_view(["PATCH"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def update_book_view(request, book_id):    
-    book = Book.objects.filter(id=book_id).first()
-    if book:
+def update_book_view(request, book_id):
+    # Get the user associated with the token
+    user = request.user
+
+    # Check if the user has the required account_type
+    if user.account_type == 'Admin' or user.account_type == 'Staff Member':
+        # User has the required account_type, proceed with the update
+        book = get_object_or_404(Book, id=book_id)
         data = request.data
-        #When working with serializers in Django REST framework, make sure to use the partial=True option when updating instances. This allows you to perform partial updates, meaning you can update only the fields that you provide in the request without requiring all fields to be present. This prevents an error when i try updating the book and i do not change the book's unique field, it gives me an error even though i am not changing the unique field of the particular book
         serializer = BookSerializer(book, data=data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=400)
     else:
-        return Response("Book not found", status=404)
-       
+        # User does not have the required account_type
+        return Response("Permission Denied: User does not have the required account_type", status=403)
+
+
+
+
+# @api_view(["DELETE"])
+# @authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+# def delete_book_view(request, book_id):
+#     book = Book.objects.filter(id=book_id).first()
+#     if book:
+#         book.delete()
+#         return Response("Book successfully deleted", status=204)
+#     else:
+#         return Response("Book not found", status=404)
 
 @api_view(["DELETE"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_book_view(request, book_id):
-    book = Book.objects.filter(id=book_id).first()
-    if book:
+    # Get the user associated with the token
+    user = request.user
+
+    # Check if the user has the required account_type
+    if user.account_type == 'Admin':
+        # User has the required account_type, proceed with the delete
+        book = get_object_or_404(Book, id=book_id)
         book.delete()
         return Response("Book successfully deleted", status=204)
     else:
-        return Response("Book not found", status=404)
-
+        # User does not have the required account_type
+        return Response("Permission Denied: User does not have the required account_type", status=403)
 
 
 #CREATING OUR AUTHENTICATION API VIEW
