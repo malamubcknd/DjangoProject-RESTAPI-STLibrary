@@ -134,7 +134,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_SCHEMA_CLASS' : 'drf_spectacular.openapi.AutoSchema', 
+    'DEFAULT_SCHEMA_CLASS' : 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3  # Default page size you want to set
 }
 
 SPECTACULAR_SETTINGS = {'TITLE': 'Django DRF STLibrary'}
