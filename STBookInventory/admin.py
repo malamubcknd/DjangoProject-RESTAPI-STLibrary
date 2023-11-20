@@ -23,7 +23,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ("email",)
 
     fieldsets = (
-        ('User Details', {'fields': ('name', 'email')}),
+        ('User Details', {'fields': ('name', 'email', 'account_type')}),
         ('Permissions', {'fields': ('groups','user_permissions','is_staff', 'is_active', 'is_superuser')}),
         ('User Timeline', {'fields': ('date_joined', 'last_login')}),
     )
