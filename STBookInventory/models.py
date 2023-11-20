@@ -2,6 +2,7 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 
 from django.db import models
+from django.utils.translation import gettext as _
 
 # Import the User model if you're using Django's built-in authentication
 #from django.contrib.auth.models import User
@@ -78,9 +79,17 @@ class CustomUserManager(UserManager):
 #We are using functions from our Custom User Manager Class
 #This custom user model extends Django's built-in AbstractBaseUser and PermissionsMixin classes, allowing you to create a user model with customized fields and permissions    
 class User(AbstractBaseUser, PermissionsMixin):
+    
+    class AccountType(models.TextChoices):
+
+        GENERAL_USER = 'General User'
+        STAFF_MEMBER = 'Staff Member'
+        ADMIN = 'Admin'
+    
     #Our fields for User Model are email, name, is_active, is_superuser, is_staff, date_joined, last_login
     email = models.EmailField(blank=True, default='', unique=True)
     name = models.CharField(max_length=255, blank=True, default='')
+    account_type = models.CharField(_('Account Type'), max_length=100, choices=AccountType.choices, default=AccountType.GENERAL_USER)
     
     #Adding the fields that django depends on(must add since we defined our own custom user model). This determines whether a user registered via REST can log into the admin site
     is_active = models.BooleanField(default=True)
