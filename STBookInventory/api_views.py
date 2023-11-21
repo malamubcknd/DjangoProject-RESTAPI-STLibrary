@@ -1,7 +1,7 @@
 #This line imports the BookSerializer class from a module located in the same directory as the current module. The . in the import statement indicates the current package or directory. In this context, it means that the BookSerializer class is defined in a module within the same app.
 from .serializers import BookSerializer
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 
@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from .models import User
 from .serializers import UserSerializer
+from rest_framework import status, renderers
 
 #Similar to the previous line, this imports the Book model from a module located in the same directory. It's common to organize your Django app with models, views, and serializers in the same package or directory.
 from .models import Book
@@ -49,6 +50,10 @@ from drf_spectacular.utils import extend_schema
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def add_book_view(request):
+           # Your custom authentication logic to check for the presence of the token
+    if not request.auth:
+        return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+        
     #This conditional checks if the HTTP method used for the request is indeed a POST request. This is a safety measure to ensure that the view only processes POST requests.
     if request.method == "POST":
         if isinstance(request.data, dict):  #Check if the data is a single JSON object
@@ -79,9 +84,13 @@ def add_book_view(request):
 
 #This is the view function that handles the incoming HTTP GET request. It takes two parameters: request and book_id. The request parameter contains information about the client's request, and book_id is a parameter extracted from the URL, typically used to identify the specific book to retrieve.
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthentication,SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def get_book_view(request, book_id):
+           # Your custom authentication logic to check for the presence of the token
+    if not request.auth:
+        return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+    
     try:
     #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists. We removed .first() so that the try except function is able to read the error, otherwise it returns the first occurence of the book which in this case are empty fields
         book = Book.objects.filter(id=book_id).first()
@@ -96,26 +105,18 @@ def get_book_view(request, book_id):
     
 
 
+#from django.contrib.auth.decorators import login_required
 #This is the view function that handles the incoming HTTP GET request. It takes two parameters: request and book_id. The request parameter contains information about the client's request, and book_id is a parameter extracted from the URL, typically used to identify the specific book to retrieve.
-@api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@api_view(["GET","POST"])
+@authentication_classes([TokenAuthentication,SessionAuthentication]) #Session Auth makes it possible for user login in browsable api
 @permission_classes([IsAuthenticated])
 #@parser_classes([JSONParser])
+#@login_required
 def get_all_books_view(request):
-    # Check if the "token" key is present in the JSON payload
-    #if "token" not in request.data:
-        #return Response({"detail": "Token not provided in the JSON payload."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Extract the token from the JSON payload
-    #token = request.data.get("token")
-
-    # Validate the token
-    #try:
-        #user = Token.objects.get(key=token).user
-    #except Token.DoesNotExist:
-        #return Response({"detail": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED)
-    
-    #In this line, the view retrieves a book record from the database using the book_id provided in the URL. It uses the Django Object-Relational Mapping (ORM) to filter the Book model by the id field, which should match the book_id provided in the URL. The first() method is used to get the first matching book if it exists
+        # Your custom authentication logic to check for the presence of the token
+    if not request.auth:
+        return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+        
     paginator = PageNumberPagination()
     paginator.page_size = 10
     books = Book.objects.all()
@@ -126,10 +127,12 @@ def get_all_books_view(request):
         serializer = BookSerializer(result_page, many=True)
         #If a book was found and successfully serialized, this line returns a DRF Response object. The response contains the serialized data of the book, which is typically returned to the client as a JSON response. This allows the client to receive detailed information about the book. The HTTP status code of the response will be 200 (OK) by default, indicating a successful GET request.
         return paginator.get_paginated_response(serializer.data)
-    
+
     # If no books were found, return a 404 response
     return Response({"detail": "No books found."}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
+
 
 # @api_view(["PATCH"])
 # @authentication_classes([TokenAuthentication])
@@ -155,6 +158,10 @@ def get_all_books_view(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def update_book_view(request, book_id):
+           # Your custom authentication logic to check for the presence of the token
+    if not request.auth:
+        return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+        
     # Get the user associated with the token
     user = request.user
 
@@ -192,6 +199,10 @@ def update_book_view(request, book_id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_book_view(request, book_id):
+           # Your custom authentication logic to check for the presence of the token
+    if not request.auth:
+        return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+        
     # Get the user associated with the token
     user = request.user
 
