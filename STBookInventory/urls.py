@@ -16,6 +16,7 @@ urlpatterns = [
     path('read/api/<int:book_id>/',api_views.get_book_view, name='read_book_api'), #This is an API GET request
     path('read/api/',api_views.get_all_books_view, name='read_all_books_api'), #This is an API GET request
     path('update/api/<int:book_id>/',api_views.update_book_view, name='update_book_api'), #This is an API UPDATE request
+    path('checkout/api/<int:book_id>/',api_views.checkout_book_view, name='update_book_api'),
     path('delete/api/<int:book_id>/',api_views.delete_book_view, name='delete_book_api'), #This is an API DELETE request
     re_path('login',api_views.login),
     re_path('logout',api_views.logout),
