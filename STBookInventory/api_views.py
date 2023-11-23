@@ -14,6 +14,7 @@ from rest_framework import status, renderers
 #Similar to the previous line, this imports the Book model from a module located in the same directory. It's common to organize your Django app with models, views, and serializers in the same package or directory.
 from .models import Book
 from .models import User
+from .models import BookCheckout
 
 #Implementing pagination for REST API JSON view
 from rest_framework.pagination import PageNumberPagination
@@ -182,6 +183,7 @@ def update_book_view(request, book_id):
         return Response("Permission Denied: User does not have the required account_type", status=403)
 
 
+
 #Creating a Book checkout model for my rest api
 @api_view(["POST"])
 @authentication_classes([TokenAuthentication])
@@ -196,19 +198,26 @@ def checkout_book_view(request, book_id):
 
     # Check if the user has the required account_type
     if user.account_type == 'Admin' or user.account_type == 'Staff Member':
-        # User has the required account_type, proceed with the update
-        book = get_object_or_404(Book, id=book_id)
-        data = request.data
-        serializer = BookSerializer(book, data=data, partial=True)
+        if book.available_copies > 0:
+            checkout = BookCheckout(book=book_id, user=request.user)  
+            checkout.save()
+            
+            book.update_available_copies(increment=-1)
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        # User has the required account_type, proceed with the update
+        # book = get_object_or_404(Book, id=book_id)
+        # data = request.data
+        # serializer = BookSerializer(book, data=data, partial=True)
+        
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data)
         else:
             return Response(serializer.errors, status=400)
     else:
         # User does not have the required account_type
         return Response("Permission Denied: User does not have the required account_type", status=403)
+
 
 
 
