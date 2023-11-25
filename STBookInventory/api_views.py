@@ -185,7 +185,7 @@ def update_book_view(request, book_id):
 
 
 #Creating a Book checkout model for my rest api
-@api_view(["POST"])
+@api_view(["PATCH"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def checkout_book_view(request, book_id):
