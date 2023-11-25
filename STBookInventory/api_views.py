@@ -187,13 +187,13 @@ def update_book_view(request, book_id):
 @api_view(["PATCH"]) #This (@api_view) is a decorator provided by Django Rest Framework. It specifies that the decorated function is intended to handle HTTP PATCH requests. In your case, the function checkout_book_view is designed to handle partial updates to a book resource.
 @authentication_classes([TokenAuthentication]) #This decorator specifies the authentication classes that will be used to authenticate the user making the request. Here, TokenAuthentication is used, which means that the user must provide a valid token in the request header for authentication.
 @permission_classes([IsAuthenticated]) #This decorator specifies the permission classes that control access to the view. IsAuthenticated ensures that only authenticated users can access the view. If a user is not authenticated, a 401 Unauthorized response will be returned.
-def checkout_book_view(request, book_id): 
+def checkout_book_view(request, book_id):  #This is the function definition. It declares a view function named checkout_book_view that takes two parameters: request (representing the HTTP request) and book_id (representing the identifier of the book to be checked out).
     try: #try-except block: This is used to handle the case where the specified book with the given book_id is not found in the database. If the book is not found, a 404 Not Found response is returned with a message indicating that the book was not found
-        book = Book.objects.get(id=book_id)
+        book = Book.objects.get(id=book_id) # It attempts to retrieve a Book object from the database using the provided book_id. If the book is not found, a Book.DoesNotExist exception is caught, and a response is returned with a message indicating that the book was not found, along with a 404 Not Found status code.
     except Book.DoesNotExist:
         return Response({"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    if not request.auth: #if not request.auth:: Checks if there is an authentication token in the request. If not, it returns a 401 Unauthorized response, indicating that an authentication token is required.
+    if not request.auth: #This checks if there is an authentication token in the request (request.auth) database #if not request.auth:: Checks if there is an authentication token in the request. If not, it returns a 401 Unauthorized response, indicating that an authentication token is required.
         return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
 
     user = request.user #user = request.user: Retrieves the user making the request from the request object.
