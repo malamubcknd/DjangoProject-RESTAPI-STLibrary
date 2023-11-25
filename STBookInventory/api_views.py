@@ -108,7 +108,7 @@ def get_book_view(request, book_id):
 
 #from django.contrib.auth.decorators import login_required
 #This is the view function that handles the incoming HTTP GET request. It takes two parameters: request and book_id. The request parameter contains information about the client's request, and book_id is a parameter extracted from the URL, typically used to identify the specific book to retrieve.
-@api_view(["GET","POST"])
+@api_view(["GET"])
 @authentication_classes([TokenAuthentication,SessionAuthentication]) #Session Auth makes it possible for user login in browsable api
 @permission_classes([IsAuthenticated])
 #@parser_classes([JSONParser])
