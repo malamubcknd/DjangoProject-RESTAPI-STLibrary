@@ -184,40 +184,34 @@ def update_book_view(request, book_id):
 
 
 
-#Creating a Book checkout model for my rest api
 @api_view(["PATCH"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def checkout_book_view(request, book_id):
-           # Your custom authentication logic to check for the presence of the token
+    try:
+        book = Book.objects.get(id=book_id)
+    except Book.DoesNotExist:
+        return Response({"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
+
     if not request.auth:
         return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
-        
-    # Get the user associated with the token
+
     user = request.user
 
-    # Check if the user has the required account_type
-    if user.account_type == 'Admin' or user.account_type == 'Staff Member':
+    if user.account_type in ['Admin', 'Staff Member']:
         if book.available_copies > 0:
-            checkout = BookCheckout(book=book_id, user=request.user)  
+            checkout = BookCheckout(book=book, user=request.user)
             checkout.save()
-            
-            book.update_available_copies(increment=-1)
-        
-        # User has the required account_type, proceed with the update
-        # book = get_object_or_404(Book, id=book_id)
-        # data = request.data
-        # serializer = BookSerializer(book, data=data, partial=True)
-        
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=400)
-    else:
-        # User does not have the required account_type
-        return Response("Permission Denied: User does not have the required account_type", status=403)
 
+            book.available_copies -= 1  # Update available_copies field directly
+
+            book.save()  # Save the changes to the book model
+
+            return Response({"detail": "Book checked out successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "No available copies of the book."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"detail": "Permission Denied: User does not have the required account_type"}, status=status.HTTP_403_FORBIDDEN)
 
 
 
