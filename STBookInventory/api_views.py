@@ -184,22 +184,22 @@ def update_book_view(request, book_id):
 
 
 
-@api_view(["PATCH"])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def checkout_book_view(request, book_id):
-    try:
+@api_view(["PATCH"]) #This (@api_view) is a decorator provided by Django Rest Framework. It specifies that the decorated function is intended to handle HTTP PATCH requests. In your case, the function checkout_book_view is designed to handle partial updates to a book resource.
+@authentication_classes([TokenAuthentication]) #This decorator specifies the authentication classes that will be used to authenticate the user making the request. Here, TokenAuthentication is used, which means that the user must provide a valid token in the request header for authentication.
+@permission_classes([IsAuthenticated]) #This decorator specifies the permission classes that control access to the view. IsAuthenticated ensures that only authenticated users can access the view. If a user is not authenticated, a 401 Unauthorized response will be returned.
+def checkout_book_view(request, book_id): 
+    try: #try-except block: This is used to handle the case where the specified book with the given book_id is not found in the database. If the book is not found, a 404 Not Found response is returned with a message indicating that the book was not found
         book = Book.objects.get(id=book_id)
     except Book.DoesNotExist:
         return Response({"detail": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    if not request.auth:
+    if not request.auth: #if not request.auth:: Checks if there is an authentication token in the request. If not, it returns a 401 Unauthorized response, indicating that an authentication token is required.
         return Response({"detail": "Authentication token is required."}, status=status.HTTP_401_UNAUTHORIZED)
 
-    user = request.user
+    user = request.user #user = request.user: Retrieves the user making the request from the request object.
 
-    if user.account_type in ['Admin', 'Staff Member']:
-        if book.available_copies > 0:
+    if user.account_type in ['Admin', 'Staff Member']: #if user.account_type in ['Admin', 'Staff Member']:: Checks if the user has an account type of 'Admin' or 'Staff Member'. If yes, it proceeds to the next level of checks.
+        if book.available_copies > 0: #if book.available_copies > 0:: Checks if there are available copies of the book. If yes, it creates a new BookCheckout instance, saves it to the database, updates theavailable_copies field of the book, and saves the changes to the book model.
             checkout = BookCheckout(book=book, user=request.user)
             checkout.save()
 
@@ -207,11 +207,11 @@ def checkout_book_view(request, book_id):
 
             book.save()  # Save the changes to the book model
 
-            return Response({"detail": "Book checked out successfully."}, status=status.HTTP_200_OK)
+            return Response({"detail": "Book checked out successfully."}, status=status.HTTP_200_OK) #If everything is successful, it returns a 200 OK response with a message indicating that the book was checked out successfully
         else:
-            return Response({"detail": "No available copies of the book."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "No available copies of the book."}, status=status.HTTP_400_BAD_REQUEST) #else:: If there are no available copies, it returns a 400 Bad Request response indicating that there are no available copies of the book.
     else:
-        return Response({"detail": "Permission Denied: User does not have the required account_type"}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"detail": "Permission Denied: User does not have the required account_type"}, status=status.HTTP_403_FORBIDDEN) #If the user does not have the required account type ('Admin' or 'Staff Member'), it returns a 403 Forbidden response with a message indicating that the user does not have the required account type
 
 
 
