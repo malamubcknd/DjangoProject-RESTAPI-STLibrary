@@ -24,4 +24,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')), #provides the login button on the browsable api
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/docs/', SpectacularSwaggerView.as_view(url_name='schema')),
+    #path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
