@@ -22,6 +22,7 @@ urlpatterns = [
     re_path('logout',api_views.logout),
     re_path('signup',api_views.signup),
     re_path('test_token',api_views.test_token),
+    path('change_password/', api_views.change_password, name='change_password'),
 ]
 
 
