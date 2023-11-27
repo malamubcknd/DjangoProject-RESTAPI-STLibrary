@@ -316,7 +316,84 @@ def change_password(request):
             return Response({'error': 'Incorrect old password.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+import secrets
+def generate_unique_token():
+    return secrets.token_urlsafe(32)
 
+from django.core.mail import send_mail
+from django.urls import reverse
+
+def send_reset_email(email, token):
+    # Construct the URL for the password reset view
+    reset_url = reverse('password_reset', kwargs={'token': token})  #The token has been infused into the password_url endpoint in order to provide a unique url so the user does not have to input the url again. #This modification uses the reverse function to dynamically generate the URL for the password_reset view based on its name and includes it in the email message
+    absolute_reset_url = f'http://127.0.0.1:8000/stbookinventory/{reset_url}'  # input your url endpoint here minus the view
+
+    # Message with the URL and instructions
+    message = f'To reset your password, make a POST request to:\n\n{absolute_reset_url}\n\n' \
+              'Include the following JSON data in your request body:\n\n' \
+              '[{"email": "your_email_address"},{"new_password": "your_new_password"}]\n\n' \
+              'This link will expire in 15 minutes.'
+
+    subject = 'Password Reset Request'
+    from_email = 'marvinalamu@gmail.com'
+    recipient_list = [email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+
+from .serializers import ForgotPasswordSerializer
+from django.core.cache import cache  # Import cache module
+
+@api_view(['POST'])
+def forgot_password(request):
+    serializer = ForgotPasswordSerializer(data=request.data)
+    if serializer.is_valid():
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate a unique one-time token
+        token = generate_unique_token()
+
+        # Store the token in the cache with a short expiration time (e.g., 15 minutes)
+        cache_key = f'password_reset_token_{token}'
+        cache.set(cache_key, email, timeout=900)  # 900 seconds = 15 minutes
+
+        send_reset_email(email, token)  #i have Implemented a function for send_email already above # i have also set the logic to send the email with the reset link and token
+
+        return Response({'message': 'Password reset link sent successfully.'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+import json
+from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+@api_view(['POST'])
+def password_reset(request, token):
+    # Retrieve the email associated with the token from the cache
+    cache_key = f'password_reset_token_{token}'
+    email = cache.get(cache_key)
+
+    if not email:
+        return JsonResponse({'error': 'Invalid or expired password reset link.'}, status=400)
+
+    # Reset the user's password
+    new_password = json.loads(request.body.decode('utf-8')).get('new_password')
+    user = User.objects.get(email=email)
+    user.password = make_password(new_password)
+    user.save()
+
+    # Remove the token from the cache after using it
+    cache.delete(cache_key)
+
+    return JsonResponse({'message': 'Password reset successful.'}, status=200)
+
+
+#used for my token testing in test.rest
 from rest_framework.decorators import authentication_classes,permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
