@@ -31,3 +31,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 # class ResetPasswordEmailSerializer(serializers.Serializer):
 #     email = serializers.EmailField(required=True)
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
