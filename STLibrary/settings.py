@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j$g18i^0imlh8at69!(r#%#u+dro3n4ov$adf$ac5_1hx9sv3n'
+SECRET_KEY = 'SECRET_KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'STLibrary.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR, 'templates/',],   #is used to specify a list of directories where Django should look for template files. BASE_DIR: This is a variable that typically represents the base directory of your Django project. It's defined in your project's settings.py and is set to the directory containing the settings.py. This is a relative path indicating that Django should also look for templates in a directory named "templates" located within your project's base directory (BASE_DIR).
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
