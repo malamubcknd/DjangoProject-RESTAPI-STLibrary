@@ -21,8 +21,10 @@ urlpatterns = [
     re_path('login',api_views.login),
     re_path('logout',api_views.logout),
     re_path('signup',api_views.signup),
-    re_path('test_token',api_views.test_token),
+    re_path('test_token',api_views.test_token), #used for my token testing
     path('change_password/', api_views.change_password, name='change_password'),
+    path('forgot_password/', api_views.forgot_password, name='forgot-password'),
+    path('password_reset/<str:token>/', api_views.password_reset, name='password_reset'),
 ]
 
 
