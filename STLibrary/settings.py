@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from decouple import config, Csv
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-j$g18i^0imlh8at69!(r#%#u+dro3n4ov$adf$ac5_1hx9sv3n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','django-render-stbookinventory.onrender.com']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 # Application definition
@@ -144,11 +145,13 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {'TITLE': 'Django DRF STLibrary'}
 
 
-# # Email Backend Configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Replace with your preferred backend
 
-# EMAIL_PORT = 587  # Replace with your email port
-# EMAIL_USE_TLS = True  # Set to False if your email server doesn't use TLS
-# EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email host for gmail -> 'smtp.gmail.com'
-# EMAIL_HOST_USER = EMAIL_HOST_USER  # Replace with your email username
-# EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  # Replace with your email password
+
+# Email Backend Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Replace with your preferred backend
+
+EMAIL_PORT = 587  # Replace with your email port
+EMAIL_USE_TLS = True  # Set to False if your email server doesn't use TLS
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email host for gmail -> 'smtp.gmail.com'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')  # Replace with your email username
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')  # Replace with your email password
