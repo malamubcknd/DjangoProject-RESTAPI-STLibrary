@@ -4,3 +4,4 @@ venv/
 schema.yml
 db.sqlite
 .env
+test.rest
