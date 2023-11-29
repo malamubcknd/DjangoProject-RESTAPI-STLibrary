@@ -1,4 +1,4 @@
-#We are going to defines a Django REST framework (DRF) serializer class
+#We are going to define a Django REST framework (DRF) serializer class
 
 #Importing rest_framework from serializers imports the serializers module from the Django REST framework (DRF).The serializers module provides a set of classes and functions that help you serialize and deserialize data in various formats, such as JSON, XML, or other content types, to work with Django models and querysets.
 from rest_framework import serializers
@@ -29,8 +29,6 @@ class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 
-# class ResetPasswordEmailSerializer(serializers.Serializer):
-#     email = serializers.EmailField(required=True)
 
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
