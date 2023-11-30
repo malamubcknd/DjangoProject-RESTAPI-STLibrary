@@ -19,8 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email','password', 'account_type']
 
 
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
+class ChangePasswordSerializer(serializers.Serializer): #This line creates a new serializer class named ChangePasswordSerializer. This class will be used to handle the serialization and validation of data related to changing a user's password.
+    old_password = serializers.CharField(required=True) #In the body of the ChangePasswordSerializer class, two fields are defined: old_password and new_password. These fields are of type serializers.CharField, which means they are expecting string data. The required=True argument indicates that these fields are mandatory, and the serializer will expect them to be present when validating input data.
     new_password = serializers.CharField(required=True)
 
 
