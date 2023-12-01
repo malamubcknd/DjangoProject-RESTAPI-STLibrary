@@ -133,28 +133,6 @@ def get_all_books_view(request):
     return Response({"detail": "No books found."}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
-# @api_view(["PATCH"])
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
-# def update_book_view(request, book_id): 
-#     book = Book.objects.filter(id=book_id).first()
-#     if User.account_type == 'Admin':
-#         if book:
-#             data = request.data
-#             #When working with serializers in Django REST framework, make sure to use the partial=True option when updating instances. This allows you to perform partial updates, meaning you can update only the fields that you provide in the request without requiring all fields to be present. This prevents an error when i try updating the book and i do not change the book's unique field, it gives me an error even though i am not changing the unique field of the particular book
-#             serializer = BookSerializer(book, data=data, partial=True)
-#             if serializer.is_valid():
-#                 serializer.save()
-#                 return Response(serializer.data)
-#             else:
-#                 return Response(serializer.errors, status=400)
-#         else:
-#             return Response("Book not found", status=404)
-#     else:
-#         return Response("Sorry you are not an Admin", status=404)
-
 @api_view(["PATCH"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
