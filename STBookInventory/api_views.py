@@ -193,17 +193,6 @@ def checkout_book_view(request, book_id):  #This is the function definition. It 
 
 
 
-# @api_view(["DELETE"])
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
-# def delete_book_view(request, book_id):
-#     book = Book.objects.filter(id=book_id).first()
-#     if book:
-#         book.delete()
-#         return Response("Book successfully deleted", status=204)
-#     else:
-#         return Response("Book not found", status=404)
-
 @api_view(["DELETE"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -226,7 +215,7 @@ def delete_book_view(request, book_id):
         return Response("Permission Denied: User does not have the required account_type", status=403)
 
 
-#CREATING OUR AUTHENTICATION API VIEW
+#CREATING OUR AUTHENTICATION API VIEWS
 
 #This decorator specifies that the view function should only respond to HTTP POST requests
 @api_view(['POST'])
