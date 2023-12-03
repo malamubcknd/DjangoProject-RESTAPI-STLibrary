@@ -1,27 +1,18 @@
 from django.contrib import admin
 
 from django.contrib.auth import get_user_model
-from django.http.request import HttpRequest
 User = get_user_model()
-
-#from django.contrib.auth.models import Group
-from django.contrib.auth.admin import UserAdmin
-
-# Register your models here.
 
 from .models import User
 from .models import Book
 from .models import BookCheckout
 
-#admin.site.register(User)
-admin.site.register(Book)
-admin.site.register(BookCheckout)
-
+admin.site.register(Book) #Register my book model
+admin.site.register(BookCheckout) #Register my BookCheckout model
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ("email",)
-
     fieldsets = (
         ('User Details', {'fields': ('name', 'email', 'account_type')}),
         ('Permissions', {'fields': ('groups','user_permissions','is_staff', 'is_active', 'is_superuser')}),
@@ -44,7 +35,6 @@ class UserAdmin(admin.ModelAdmin):
             form.base_fields['name'].disabled = True
             form.base_fields['date_joined'].disabled = True
             form.base_fields['last_login'].disabled = True
-            # form.base_fields['save'].disabled = True
         return form
     
     def has_delete_permission(self, request, obj=None):
