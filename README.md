@@ -4,7 +4,7 @@ The functionalities are:
 Users can add a book or books, Get a single book or all books (pagination feature in place) as well as see the number of books available at any point
 Every book has a record of the id of the particular user that added the book
 Only Admins can Delete a book
-Only Admins and Staff can update a book
+Only Admins and Staff can update a book 
 Only Admins and Staff can check out a book that is being borrowed
 Admins and Staff can keep track of who checked out a book and the date and time they checked it out
 Anytime a user checks out a book the book inventory is updated with the number of books remaining
