@@ -14,7 +14,7 @@ The functionalities are:
 11. Staff are not be able to delete a book On the API view or template view (only create, read and update)
 12. Staff are not be able to edit certain important fields in the admin site
 13. Staff are not be able to see certain models (Tokens) in the admin site for security reasons. Only admins can see these tokens
-14. Automated docs (yasg and spectacular) have been created for this project.
+14. Automated docs (yasg/spectacular) have been created for this project.
 15. When a user signs up, i return a harshed password and not the actual password
 16. I have implement request new token if a user forgets their token and also a reset password feature which is done via the user's mail (Token is sent to the user through mail)
 
