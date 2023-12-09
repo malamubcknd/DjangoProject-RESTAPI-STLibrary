@@ -1,6 +1,6 @@
 I created a book management REST API in Django for a Library with a minimalistic front-end design
 
-The functionalities are:
+The functionalities for the REST API endpoint are:
 1. Users can add a book or books, Get a single book or all books (pagination feature in place) as well as see the number of books available at any point
 2. Every book has a record of the id of the particular user that added the book
 3. Only Admins can Delete a book
