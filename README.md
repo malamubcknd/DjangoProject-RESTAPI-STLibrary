@@ -1,3 +1,5 @@
+This is my first Djano App !
+
 I created a book management REST API in Django for a Library with a minimalistic front-end design
 
 The functionalities for the REST API endpoint are:
