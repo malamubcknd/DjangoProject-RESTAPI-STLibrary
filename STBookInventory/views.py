@@ -58,7 +58,7 @@ def get_book(request, book_id):
 
 
 #Create a view to list all books
-def list_books(request):
+def get_books(request):
     books = Book.objects.all()
     return render(request, 'STBookInventory/book_list.html', {'books': books})
 
@@ -70,6 +70,7 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('list_books')
     return render(request, 'STBookInventory/delete_book.html', {'book': book})
+
 
 
 from .models import BookCheckout
@@ -90,8 +91,7 @@ def checkout_book(request, book_id):
         # Save the checkout instance to the database
         checkout.save()
         
-        # Decrease available copies when a book is checked out
-        #This only works for when a person checks out 1 book at a time. What if multiple books are checked 
+        # Decrease available copies when a book is checked out 
         #out at the same time? I will get back to this later
         book.update_available_copies(increment=-1)
         
@@ -102,6 +102,7 @@ def checkout_book(request, book_id):
         # Handle the case where no copies are available
         # You can return an error or a message to the user
         return render(request, 'STBookInventory/checkout_error.html')
+
 
 
 #The return view likewise, uses the Book Model
@@ -127,3 +128,14 @@ def return_book(request, book_id):
     else:
         form = BookForm(instance=book)
     return render(request, 'STBookInventory/update_book.html', {'form': form})
+
+
+
+def search_results(request): #This line defines a view function named search_results that takes a request object as its parameter. In Django, views handle HTTP requests and return HTTP responses.
+    query = request.GET.get('query') #This line retrieves the value of the 'query' parameter from the GET parameters of the request. In a URL like /search/?query=example, this would capture the value 'example' from the query string.
+    books = None #Initializes the variable books to None. This variable will later be used to store the search results.
+
+    if query: #Checks if a search query was provided. If query is not None or an empty string, the code inside the if block will be executed.
+        books = Book.objects.filter(title__icontains=query) #If a search query is provided, this line performs a case-insensitive search (icontains) on the 'title' field of the Book model. It retrieves all books whose titles contain the provided search query.
+
+    return render(request, 'search_results.html', {'books': books, 'query': query}) #Finally, the view returns a rendered HTML page using the render function. The template used is 'search_results.html', and it is passed a context dictionary containing the search results (books) and the original search query (query). The context dictionary allows you to pass data from the view to the template, making it accessible for rendering in the HTML page.
