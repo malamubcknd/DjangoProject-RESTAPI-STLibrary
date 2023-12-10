@@ -4,14 +4,15 @@ from .import api_views
 
 
 urlpatterns = [
-    path('add/', views.add_book, name='add_book'),
-    path('update/<int:book_id>/', views.update_book, name='update_book'), #This is a GET request because of the parameter we insert which is the book_id
-    path('book/<int:book_id>/', views.get_book, name='book_detail'), #This is a GET request because of the parameter we insert which is the book_id
-    path('list/', views.list_books, name='list_books'),
-    path('', views.list_books, name='list_books'),
-    path('delete/<int:book_id>/', views.delete_book, name='delete_book'), #This is a GET request because of the parameter we insert which is the book_id
-    path('checkout/<int:book_id>/', views.checkout_book, name='checkout_book'), #This is a GET request because of the parameter we insert which is the book_id
-    path('return/<int:book_id>/', views.return_book, name='return_book'), #This is a GET request because of the parameter we insert which is the book_id
+    path('add/', views.add_book, name='add_the_book'), #the name makes it possible to reference this link in the html template
+    path('update/<int:book_id>/', views.update_book, name='update_the_book'), # We use <int:book_id> because id is our primary key #This is a GET request because of the parameter we insert which is the book_id
+    path('book/<int:book_id>/', views.get_book, name='list_book'), #This is a GET request because of the parameter we insert which is the book_id
+    path('list/', views.get_books, name='list_books'),
+    path('search/', views.search_results, name='search_result'),
+    path('', views.get_books, name='list_books'), #This is our home/index view for our templates html pages
+    path('delete/<int:book_id>/', views.delete_book, name='delete_the_book'), #This is a GET request because of the parameter we insert which is the book_id
+    path('checkout/<int:book_id>/', views.checkout_book, name='checkout_the_book'), #This is a GET request because of the parameter we insert which is the book_id
+    path('return/<int:book_id>/', views.return_book, name='return_the_book'), #This is a GET request because of the parameter we insert which is the book_id
     path('create/api/',api_views.add_book_view, name='create_book_api'), #This is an API POST request
     path('read/api/<int:book_id>/',api_views.get_book_view, name='read_book_api'), #This is an API GET request
     path('read/api/',api_views.get_all_books_view, name='read_all_books_api'), #This is an API GET request
