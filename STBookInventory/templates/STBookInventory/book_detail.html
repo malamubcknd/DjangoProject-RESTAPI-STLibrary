@@ -1,13 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Book Detail</title>
-</head>
-<body>
-    <h1>Book Detail</h1>
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}{% endblock %}
+
+
+{% block body %}
+    <article class="media content-section">
+    <h1>Book Details</h1>
     <p>Title: {{ book.title }}</p>
     <p>Author: {{ book.author }}</p>
     <p>ISBN: {{ book.isbn }}</p>
     <p>Available Copies: {{ book.available_copies }}</p>
-</body>
-</html>
+    </article>
+
+    <div>
+    <p1>checkout this book</p1>
+    <a href="{% url 'checkout_the_book' book.id %}">Checkout this book</a>
+    </div>
+
+    <div>
+    <p1>update this book</p1>
+    <a href="{% url 'update_the_book' book.id %}">Update this this book</a>
+    </div>
+
+    <div>
+    <p1>view all books</p1>
+    <a href="{% url 'list_books' %}">See all books</a>
+    </div>
+{% endblock %}
+
+

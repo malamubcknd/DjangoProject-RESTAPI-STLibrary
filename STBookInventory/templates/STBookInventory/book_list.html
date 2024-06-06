@@ -1,14 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Book List</title>
-</head>
-<body>
-    <h1>Book List</h1>
-    <ul>
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}{% endblock %} <!-- if you don't want to overwrite the base html, then don't bring the block at all even if you will keep it empty-->
+
+{% block body %}
+    <h3>    
+        <div>These are the list of available books to read</div>
+    </h3>
+    
+    <form method="get" action="{% url 'search_result' %}"> <!-- the url here is the name of the url pattern. so list_books is the name of the url pattern in urls.py. This form sends a GET request to the URL pattern named 'search_result' when the user submits the search query.-->
+        <input type="text" name="query" placeholder="Search by title">
+        <button type="submit">Search for Book</button>
+    </form>
+
+    <!--
         {% for book in books %}
-            <li><a href="{% url 'book_detail' book.id %}">{{ book.title }}</a></li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+            <h2><a href="{% url 'list_book' book.id %}">{{ book.title }}</a></h2>
+            <p>ISBN : {{book.isbn}}</p>
+            <p>Author : {{book.author}}</p>
+            <p>Book added by : {{book.user.get_short_name}}</p>
+            <p>Number of Copies : {{book.available_copies}}</p>
+        {% endfor %} -->
+
+        {% for book in books %}
+        <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="{% url 'list_book' book.id %}">{{ book.title }}</a>
+                <small class="text-muted">Book added by : {{ book.user.get_short_name }}</small>
+              </div>
+              <p><a class="article-title" href="#">Author :  {{ book.author }}</a></p>
+              <p class="article-content">{{ book.available_copies }}</p>
+            </div>
+          </article>
+          {% endfor %}
+
+    <p1>You can add a book</p1>
+    <a href="{% url 'add_the_book' %}">Add a Book</a>
+
+{% endblock %}

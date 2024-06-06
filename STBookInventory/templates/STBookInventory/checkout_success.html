@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Good Checkout</title>
-</head>
-<body>
-    <h1>Great! You have checked the book out</h1>
- </body>
-</html>
+{% extends "bookinventoryapplayout.html" %}
 
+{% block title %}{% endblock %}
+
+{%block heading %}
+    Book Checked out
+{% endblock %}
+
+{% block body %}
+<article class="media content-section">
+    <h3>Great! You have checked out this book</h3>
+
+</article>
+
+<div>
+    <p1>>>></p1>
+    <a href="{% url 'list_books' %}">List of Books</a>
+</div>
+
+{% endblock %}

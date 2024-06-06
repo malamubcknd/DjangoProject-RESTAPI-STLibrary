@@ -1,0 +1,22 @@
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+    <h5>Search Results;</h5>
+
+    {% if books %}
+            {% for book in books %}
+            <h2><a href="{% url 'list_book' book.id %}">{{ book.title }}</a></h2>
+            <p>ISBN : {{book.isbn}}</p>
+            <p>Author : {{book.author}}</p>
+            <p>Book added by : {{book.user.get_short_name}}</p>
+            <p>Number of Copies : {{book.available_copies}}</p>
+            {% endfor %}
+    {% else %}
+        <p>No results found for "{{ query }}".</p>
+        <p1>See Book List</p1>
+        <a href="{% url 'list_books' %}">Book List</a>
+    {% endif %}
+    
+{% endblock %}

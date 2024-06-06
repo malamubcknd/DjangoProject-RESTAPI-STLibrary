@@ -1,14 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Book</title>
-</head>
-<body>
-    <h1>Add a New Book</h1>
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}Addbook{% endblock %}
+
+{% block body %}
+<h3>Add a new book</h3>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Add Book</button>
     </form>
-</body>
-</html>
+
+    <p1>before you add a book kindly check if the book is already added</p1>
+    <a href="{% url 'list_books' %}">Book List</a>
+{% endblock %}

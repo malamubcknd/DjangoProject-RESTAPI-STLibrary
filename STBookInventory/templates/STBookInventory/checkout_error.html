@@ -1,9 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bad CheckOut</title>
-</head>
-<body>
-    <h1>Sorry, There are no copies of this Book left to CheckOut</h1>
- </body>
-</html>
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}badcheckout{% endblock %}
+
+{%block heading %}
+    You made a mistake with your book checkout credentials
+{% endblock %}
+
+{% block body %}
+    <h3>Sorry, There are no copies of this Book left to CheckOut</h3>
+
+    <div>
+        <p1>See Books</p1>
+        <a href="{% url 'list_books' %}">Book List</a>
+    </div>
+
+{% endblock %}

@@ -1,14 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Update Book</title>
-</head>
-<body>
-    <h1>Update Book</h1>
+{% extends "bookinventoryapplayout.html" %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+<h3>Update the book</h3>
+    <article class="media content-section">
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Update Book</button>
     </form>
-</body>
-</html>
+    </article>
+
+    <div>
+    <p1>view all books</p1>
+    <a href="{% url 'list_books' %}">See all books</a>
+    </div>
+{% endblock %}
